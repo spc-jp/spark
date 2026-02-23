@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SPARK Proposal Hub Pro | 不動産AI事業計画 司令塔</title>
+  
+  <script>
+    // 画面のちらつき防止のため、CSS読み込み前にテーマを判定
+    if (localStorage.getItem('spark_theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            appBg: 'var(--color-bg)',
+            surface: 'var(--color-surface)',
+            borderLine: 'var(--color-border)',
+            primary: '#2D6BFF',
+            primaryHover: '#1B4FD6',
+            accent: '#2BE4A7',
+            muted: 'var(--color-muted)'
+          },
+          fontFamily: {
+            sans: ['"Inter"', '"Noto Sans JP"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* CSS Variables for Light / Dark mode */
+    @layer base {
+      :root {
+        --color-bg: #F1F5F9; /* slate-100 */
+        --color-surface: rgba(255, 255, 255, 0.85);
+        --color-border: rgba(0, 0, 0, 0.08);
+        --color-muted: #64748B;
+        --color-input: rgba(255, 255, 255, 0.8);
+        --text-main: #0F172A;
+        --bg-radial-1: rgba(45, 107, 255, 0.05);
+        --bg-radial-2: rgba(43, 228, 167, 0.04);
+      }
+      .dark {
+        --color-bg: #08080C;
+        --color-surface: rgba(20, 22, 30, 0.6);
+        --color-border: rgba(255, 255, 255, 0.08);
+        --color-muted: #8B949E;
+        --color-input: rgba(0, 0, 0, 0.2);
+        --text-main: #E2E8F0;
+        --bg-radial-1: rgba(45, 107, 255, 0.06);
+        --bg-radial-2: rgba(43, 228, 167, 0.04);
+      }
+    }
+
+    body {
+      background-color: var(--color-bg);
+      background-image: 
+        radial-gradient(circle at 15% 50%, var(--bg-radial-1), transparent 25%),
+        radial-gradient(circle at 85% 30%, var(--bg-radial-2), transparent 25%);
+      color: var(--text-main);
+      font-family: theme('fontFamily.sans');
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Glassmorphism Cards */
+    .glass-card {
+      background: var(--color-surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--color-border);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .dark .glass-card {
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Custom Inputs */
+    .input-pro {
+      background: var(--color-input);
+      border: 1px solid var(--color-border);
+      color: var(--text-main);
+      transition: all 0.2s ease;
+    }
+    .input-pro:focus {
+      outline: none;
+      border-color: theme('colors.primary');
+      box-shadow: 0 0 0 1px theme('colors.primary');
+      background: var(--color-bg);
+    }
+    .input-pro::placeholder {
+      color: var(--color-muted);
+    }
+
+    /* Tabs & Scenario Buttons */
+    .tab-btn.active, .scenario-btn.active {
+      background: rgba(0, 0, 0, 0.05);
+      color: var(--text-main);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    .dark .tab-btn.active, .dark .scenario-btn.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(100,100,100,0.2); border-radius: 10px; }
+    .dark ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(100,100,100,0.4); }
+    .dark ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+
+    /* Animated Badge */
+    .pulse-dot { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .5; }
+    }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col pb-6">
+
+  <!-- Top Navigation -->
+  <header class="sticky top-0 z-50 glass-card border-b border-black/5 dark:border-white/10 px-6 py-4 mb-6">
+    <div class="max-w-[1400px] mx-auto flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg border border-black/10 dark:border-white/20">
+          <i data-lucide="building-2" class="text-white w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-3">
+            <h1 class="text-lg font-bold tracking-wide text-slate-900 dark:text-white">SPARK Proposal Hub</h1>
+            <span class="px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-medium flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-accent pulse-dot"></span>PRO
+            </span>
+          </div>
+          <p class="text-xs text-muted mt-0.5">不動産AI事業計画 司令塔 (Genspark / Gemini / NotebookLM)</p>
+        </div>
+      </div>
+      
+      <!-- Right Actions -->
+      <div class="flex items-center gap-2 md:gap-3">
+        
+        <!-- App Guide (Hover Popover) -->
+        <div class="relative group">
+          <button class="text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-primary px-3 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center gap-1.5 border border-transparent hover:border-black/5 dark:hover:border-white/5">
+            <i data-lucide="info" class="w-4 h-4 text-primary"></i> アプリの使い方
+          </button>
+          
+          <!-- Popover Panel -->
+          <div class="absolute right-0 md:right-auto md:left-1/2 md:-translate-x-1/2 top-full mt-2 w-80 lg:w-[480px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+            <div class="glass-card p-5 rounded-xl shadow-2xl border border-black/10 dark:border-white/10 text-left">
+              <h4 class="font-bold text-sm text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+                <i data-lucide="target" class="w-4 h-4 text-accent"></i> このアプリでできること
+              </h4>
+              <p class="text-xs text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">
+                面倒な不動産の事業計画や提案資料づくりを、3つのAI（Genspark / Gemini / NotebookLM）を連携させて一気に終わらせるための「司令塔」です。<br>
+                エリアの色分け（<span class="text-blue-500 font-bold">青</span>→<span class="text-emerald-500 font-bold">緑</span>→<span class="text-purple-500 font-bold">紫</span>）に沿って進めるだけで、高品質な提案資料が完成します。
+              </p>
+              
+              <h4 class="font-bold text-sm text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+                <i data-lucide="list-checks" class="w-4 h-4 text-primary"></i> 操作の流れ（3ステップ）
+              </h4>
+              <ol class="text-xs text-slate-600 dark:text-slate-300 space-y-3 pl-1">
+                <li class="flex gap-2 items-start">
+                  <span class="bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0 mt-0.5 border border-blue-200 dark:border-blue-500/30">STEP 1</span>
+                  <span><strong>青枠の「案件基本情報」に入力する</strong><br>住所や面積・予算などを入力します。これだけで右上の「収支シミュレーション」が自動計算され、各AIへの指示書（プロンプト）が裏側で完成します。</span>
+                </li>
+                <li class="flex gap-2 items-start">
+                  <span class="bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0 mt-0.5 border border-emerald-200 dark:border-emerald-500/30">STEP 2</span>
+                  <span><strong>緑枠の「AIボード」で調査と企画を回す</strong><br>【S1】〜【S3】の順に進めます。「コピー」を押して指定のAI画面で実行し、返ってきた回答結果をすぐ下の入力枠に貼り付けて連携させます。</span>
+                </li>
+                <li class="flex gap-2 items-start">
+                  <span class="bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300 px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0 mt-0.5 border border-purple-200 dark:border-purple-500/30">STEP 3</span>
+                  <span><strong>紫枠の「出力パネル」で最終資料を生成する</strong><br>提案先（社内決裁 / 銀行審査 / 顧客提案）のタブを選び、「生成」ボタンを押せば完了です。必要に応じて右上のシナリオ（保守/楽観など）も切り替えられます。</span>
+                </li>
+              </ol>
+
+              <div class="mt-4 p-2.5 bg-yellow-50 dark:bg-yellow-500/10 rounded-lg border border-yellow-200 dark:border-yellow-500/20 text-xs text-yellow-800 dark:text-yellow-200 flex items-start gap-2">
+                <i data-lucide="lightbulb" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                <span>まずは右上の「設定（歯車）」＞<strong>「デモデータ入力」</strong>をお試しください。一瞬で使い方や全体の連動が理解できます！</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="w-px h-5 bg-black/10 dark:bg-white/10 hidden md:block"></div>
+
+        <!-- Settings Dropdown -->
+        <div class="relative">
+          <button id="btnSettings" class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition flex items-center border border-transparent hover:border-black/5 dark:hover:border-white/5">
+            <i data-lucide="settings" class="w-4 h-4"></i>
+          </button>
+          
+          <div id="settingsMenu" class="absolute right-0 top-full mt-2 w-56 opacity-0 invisible transform scale-95 transition-all duration-200 z-50 origin-top-right">
+            <div class="glass-card p-2 rounded-xl shadow-2xl border border-black/10 dark:border-white/10 flex flex-col gap-1 bg-white/95 dark:bg-[#14161E]/95 backdrop-blur-3xl">
+              <div class="px-3 py-1.5 text-[10px] font-bold text-slate-500 dark:text-muted uppercase tracking-wider">色合いの設定</div>
+              <button id="btnThemeLight" class="text-left px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition flex items-center justify-between group">
+                <span class="flex items-center gap-2"><i data-lucide="sun" class="w-3.5 h-3.5 text-orange-500"></i> ライトモード</span>
+                <i data-lucide="check" class="w-3.5 h-3.5 text-primary opacity-0 theme-check-light"></i>
+              </button>
+              <button id="btnThemeDark" class="text-left px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition flex items-center justify-between group">
+                <span class="flex items-center gap-2"><i data-lucide="moon" class="w-3.5 h-3.5 text-blue-400"></i> ダークモード</span>
+                <i data-lucide="check" class="w-3.5 h-3.5 text-primary opacity-0 theme-check-dark"></i>
+              </button>
+              
+              <div class="h-px bg-black/10 dark:bg-white/10 my-1 mx-2"></div>
+              
+              <div class="px-3 py-1.5 text-[10px] font-bold text-slate-500 dark:text-muted uppercase tracking-wider">データ管理</div>
+              <button id="btnDemo" class="text-left px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition flex items-center gap-2">
+                <i data-lucide="zap" class="w-3.5 h-3.5 text-yellow-500"></i> デモデータ入力
+              </button>
+              <button id="btnReset" class="text-left px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-400/10 rounded-lg transition flex items-center gap-2">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> データをクリア
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="w-px h-5 bg-black/10 dark:bg-white/10 hidden md:block"></div>
+
+        <!-- File Actions -->
+        <button id="btnLoad" class="text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition hidden md:flex items-center gap-2">
+          <i data-lucide="list" class="w-3.5 h-3.5"></i> 一覧
+        </button>
+        <button id="btnSave" class="text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition hidden md:flex items-center gap-2">
+          <i data-lucide="save" class="w-3.5 h-3.5"></i> 保存
+        </button>
+        <button id="btnExport" class="ml-1 text-xs font-bold text-white bg-primary hover:bg-primaryHover px-4 py-2.5 rounded-lg shadow-lg shadow-primary/20 transition flex items-center gap-2 border border-white/10">
+          <i data-lucide="file-output" class="w-4 h-4 text-white"></i> 一括出力
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-[1400px] mx-auto px-4 md:px-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    
+    <!-- LEFT COLUMN: Inputs & AI Workflow -->
+    <div class="lg:col-span-7 space-y-6">
+
+      <!-- Section 0: 案件一覧 (複数案件管理) -->
+      <section id="casesSection" class="glass-card rounded-2xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-black/5 dark:border-white/5 bg-black/[0.02] dark:bg-white/[0.02] flex items-center justify-between">
+          <h2 class="text-sm font-bold flex items-center gap-2 text-slate-900 dark:text-white">
+            <i data-lucide="folders" class="w-4 h-4 text-slate-500"></i>
+            案件一覧・管理
+          </h2>
+          <button id="btnNewCase" class="text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 dark:text-white dark:bg-white/10 dark:hover:bg-white/20 dark:border-white/10 px-3 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1.5">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> 新規案件
+          </button>
+        </div>
+        <div class="p-4 bg-black/[0.01] dark:bg-white/[0.01]">
+          <div id="casesList" class="flex gap-4 overflow-x-auto pb-2 snap-x hide-scrollbar">
+            <!-- JSでカードを描画 -->
+          </div>
+        </div>
+      </section>
+      
+      <!-- Section 1: Basic Info & Financials (STEP 1: Blue) -->
+      <section class="glass-card rounded-2xl overflow-hidden border-t-4 border-t-blue-500 dark:border-t-blue-500">
+        <div class="px-6 py-4 border-b border-black/5 dark:border-white/5 bg-blue-50/50 dark:bg-blue-900/10 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider border border-blue-200 dark:border-blue-500/30">STEP 1</span>
+            <h2 class="text-sm font-bold flex items-center gap-2 text-slate-900 dark:text-white">
+              <i data-lucide="map-pin" class="w-4 h-4 text-blue-500"></i>
+              案件基本情報 & 収支前提
+            </h2>
+          </div>
+          <span class="text-xs text-blue-700/70 dark:text-blue-300/70 bg-blue-100/50 dark:bg-blue-500/10 px-2.5 py-1 rounded-md border border-blue-200/50 dark:border-blue-500/20">所要時間: 約5分</span>
+        </div>
+        
+        <div class="p-6 space-y-6">
+          <!-- Basics -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1.5">案件名 (管理用)</label>
+              <input type="text" id="caseName" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm" placeholder="例：越谷駅前 小型テナントビル案">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1.5">案件ID (任意)</label>
+              <input type="text" id="caseId" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm font-mono" placeholder="例：SPK-2026-001">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1.5">住所</label>
+              <input type="text" id="address" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm" placeholder="例：埼玉県越谷市〇〇1-2-3">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1.5">最寄り・徒歩圏</label>
+              <input type="text" id="station" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm" placeholder="例：越谷駅 徒歩10分圏">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1.5">想定用途</label>
+              <select id="useType" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm appearance-none">
+                <option value="小規模テナントビル（1F店舗＋上階事務所）">小規模テナントビル（1F店舗＋上階事務所）</option>
+                <option value="医療モール（クリニック中心）">医療モール（クリニック中心）</option>
+                <option value="共同住宅（賃貸）">共同住宅（賃貸）</option>
+                <option value="倉庫・軽作業拠点">倉庫・軽作業拠点</option>
+                <option value="複合（飲食＋物販＋サービス）">複合（飲食＋物販＋サービス）</option>
+                <option value="その他">その他</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1.5">補足（ターゲット等）</label>
+              <input type="text" id="memo" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm" placeholder="例：昼需要を狙う">
+            </div>
+          </div>
+
+          <div class="h-px bg-black/10 dark:bg-white/5 w-full"></div>
+
+          <!-- Financials -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1.5">延床面積 (坪)</label>
+              <input type="number" id="tsubo" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm font-mono" placeholder="80">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1.5">想定坪単価 (円/月)</label>
+              <input type="number" id="unitPrice" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm font-mono" placeholder="14500">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1.5">想定稼働率 (%)</label>
+              <input type="number" id="occ" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm font-mono" placeholder="85">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1.5">初期投資額 (円)</label>
+              <input type="number" id="capex" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm font-mono" placeholder="180000000">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1.5">年間運営費率 (%)</label>
+              <input type="number" id="opexRate" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm font-mono" placeholder="28">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1.5">前提メモ</label>
+              <input type="text" id="assumption" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm" placeholder="例：保守的に設定">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: AI Workflow Control (STEP 2: Emerald) -->
+      <section class="glass-card rounded-2xl overflow-hidden border-t-4 border-t-emerald-500 dark:border-t-emerald-500">
+        <div class="px-6 py-4 border-b border-black/5 dark:border-white/5 bg-emerald-50/50 dark:bg-emerald-900/10 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider border border-emerald-200 dark:border-emerald-500/30">STEP 2</span>
+            <h2 class="text-sm font-bold flex items-center gap-2 text-slate-900 dark:text-white">
+              <i data-lucide="cpu" class="w-4 h-4 text-emerald-500"></i>
+              AI 司令塔ボード
+            </h2>
+          </div>
+          <span class="text-xs text-emerald-700/70 dark:text-emerald-300/70">自動プロンプト生成 & 結果集約</span>
+        </div>
+
+        <div class="p-6 space-y-6">
+          
+          <!-- Workflow Steps -->
+          <div class="space-y-4">
+            <!-- STEP 1: Genspark -->
+            <div class="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-white/60 dark:bg-black/20 hover:bg-white/80 dark:hover:bg-black/30 transition-colors shadow-sm dark:shadow-none">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center shrink-0">
+                    <span class="text-green-600 dark:text-green-400 font-bold text-xs">S1</span>
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                      立地調査 <span class="text-xs font-normal text-muted px-2 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10">対象: Genspark</span>
+                    </h3>
+                    <p class="text-xs text-muted mt-1">案件情報から立地・競合を調査するためのプロンプトを生成します。</p>
+                  </div>
+                </div>
+                <button id="btnCopyGenspark" class="shrink-0 text-xs font-medium text-slate-700 dark:text-white bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border border-black/10 dark:border-white/10 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                  <i data-lucide="copy" class="w-3 h-3"></i> プロンプトをコピー
+                </button>
+              </div>
+              <div class="mt-4">
+                <textarea id="gensparkResult" class="input-pro w-full rounded-xl px-4 py-3 text-sm h-24 resize-y" placeholder="ここにGensparkの調査結果（回答）を貼り付けてください..."></textarea>
+              </div>
+            </div>
+
+            <!-- STEP 2: Gemini -->
+            <div class="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-white/60 dark:bg-black/20 hover:bg-white/80 dark:hover:bg-black/30 transition-colors shadow-sm dark:shadow-none">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
+                    <span class="text-blue-600 dark:text-blue-400 font-bold text-xs">S2</span>
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                      企画生成 <span class="text-xs font-normal text-muted px-2 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10">対象: Gemini</span>
+                    </h3>
+                    <p class="text-xs text-muted mt-1">調査結果と収支を元に、コンセプトや差別化ポイントを生成します。</p>
+                  </div>
+                </div>
+                <button id="btnCopyGemini" class="shrink-0 text-xs font-medium text-slate-700 dark:text-white bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border border-black/10 dark:border-white/10 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                  <i data-lucide="copy" class="w-3 h-3"></i> プロンプトをコピー
+                </button>
+              </div>
+              <div class="mt-4">
+                <textarea id="geminiResult" class="input-pro w-full rounded-xl px-4 py-3 text-sm h-24 resize-y" placeholder="ここにGeminiの企画結果（回答）を貼り付けてください..."></textarea>
+              </div>
+            </div>
+
+            <!-- STEP 3: NotebookLM -->
+            <div class="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-white/60 dark:bg-black/20 hover:bg-white/80 dark:hover:bg-black/30 transition-colors shadow-sm dark:shadow-none">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shrink-0">
+                    <span class="text-purple-600 dark:text-purple-400 font-bold text-xs">S3</span>
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                      資料化 <span class="text-xs font-normal text-muted px-2 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10">対象: NotebookLM</span>
+                    </h3>
+                    <p class="text-xs text-muted mt-1">すべての情報を統合し、最終的な提案文のベースを作成します。</p>
+                  </div>
+                </div>
+                <button id="btnCopyNLM" class="shrink-0 text-xs font-medium text-slate-700 dark:text-white bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border border-black/10 dark:border-white/10 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                  <i data-lucide="copy" class="w-3 h-3"></i> プロンプトをコピー
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- RIGHT COLUMN: Dashboard & Output -->
+    <div class="lg:col-span-5 space-y-6">
+      
+      <!-- KPI Dashboard (Neutral / Matches STEP 1 context) -->
+      <section class="glass-card rounded-2xl overflow-hidden flex flex-col border-t-4 border-t-slate-400 dark:border-t-slate-600">
+        <div class="px-5 py-3 border-b border-black/5 dark:border-white/5 bg-black/[0.02] dark:bg-white/[0.02] flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-bold flex items-center gap-2 text-slate-900 dark:text-white">
+              <i data-lucide="pie-chart" class="w-4 h-4 text-slate-500"></i>
+              収支シミュレーション
+            </h2>
+            <button id="btnCopyExcel" class="text-xs text-muted hover:text-slate-900 dark:hover:text-white flex items-center gap-1 transition">
+              <i data-lucide="clipboard-copy" class="w-3 h-3"></i> Excel用
+            </button>
+          </div>
+          
+          <!-- シナリオ切替 -->
+          <div class="flex p-1 bg-slate-200/50 dark:bg-black/40 rounded-xl border border-black/5 dark:border-white/5">
+            <button class="scenario-btn active flex-1 py-1.5 text-[11px] font-bold rounded-lg transition-all" data-scenario="standard">標準シナリオ</button>
+            <button class="scenario-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg transition-all text-muted hover:text-slate-900 dark:hover:text-white" data-scenario="conservative">保守（堅実）</button>
+            <button class="scenario-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg transition-all text-muted hover:text-slate-900 dark:hover:text-white" data-scenario="optimistic">楽観（最大化）</button>
+          </div>
+        </div>
+        
+        <div class="p-5 grid grid-cols-2 gap-3" id="kpiArea">
+          <!-- Rendered by JS -->
+        </div>
+      </section>
+
+      <!-- Output Panel (STEP 3: Purple) -->
+      <section class="glass-card rounded-2xl overflow-hidden flex flex-col flex-grow border-t-4 border-t-purple-500 dark:border-t-purple-500">
+        <div class="px-5 py-4 border-b border-black/5 dark:border-white/5 bg-purple-50/50 dark:bg-purple-900/10">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider border border-purple-200 dark:border-purple-500/30">STEP 3</span>
+            <h2 class="text-sm font-bold flex items-center gap-2 text-slate-900 dark:text-white">
+              <i data-lucide="presentation" class="w-4 h-4 text-purple-500"></i>
+              提案資料 出力パネル
+            </h2>
+          </div>
+          
+          <!-- Tabs -->
+          <div class="flex p-1 bg-slate-200/50 dark:bg-black/40 rounded-xl border border-black/5 dark:border-white/5">
+            <button class="tab-btn active flex-1 py-2 text-xs font-bold rounded-lg transition-all" data-tab="internal">
+              社内決裁
+            </button>
+            <button class="tab-btn flex-1 py-2 text-xs font-bold rounded-lg transition-all text-muted hover:text-slate-900 dark:hover:text-white" data-tab="bank">
+              銀行審査
+            </button>
+            <button class="tab-btn flex-1 py-2 text-xs font-bold rounded-lg transition-all text-muted hover:text-slate-900 dark:hover:text-white" data-tab="client">
+              顧客提案
+            </button>
+          </div>
+        </div>
+
+        <div class="p-5 flex flex-col flex-grow gap-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span id="modeChip" class="px-2 py-1 rounded border text-[10px] font-bold text-primary border-primary/30 bg-primary/10 dark:bg-primary/20">社内モード</span>
+              <span id="timeChip" class="text-xs text-muted">目安：10分で説明</span>
+            </div>
+            <div class="flex gap-2">
+              <button id="btnGenerateText" class="text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 px-4 py-1.5 rounded-lg shadow-lg shadow-purple-500/20 transition flex items-center gap-1.5 border border-purple-400/20">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-white"></i> 生成
+              </button>
+              <button id="btnCopyText" class="text-xs font-medium text-slate-700 dark:text-white bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border border-black/10 dark:border-white/10 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              </button>
+              <button id="btnPrint" class="text-xs font-medium text-slate-700 dark:text-white bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border border-black/10 dark:border-white/10 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5" title="印刷/PDF">
+                <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <textarea id="finalText" class="input-pro w-full rounded-xl px-4 py-3 text-sm flex-grow min-h-[300px] resize-none leading-relaxed" placeholder="「生成」ボタンを押すと、目的に合わせた最終文章がここに作成されます。"></textarea>
+
+          <!-- Prompt Preview Drawer (Collapsible) -->
+          <details class="group bg-black/5 dark:bg-black/30 border border-black/10 dark:border-white/5 rounded-xl overflow-hidden">
+            <summary class="px-4 py-2.5 text-xs font-medium text-muted cursor-pointer hover:text-slate-900 dark:hover:text-white flex items-center justify-between outline-none">
+              <span>生成されるプロンプト（確認用）</span>
+              <i data-lucide="chevron-down" class="w-4 h-4 transition-transform group-open:rotate-180"></i>
+            </summary>
+            <div class="p-4 border-t border-black/10 dark:border-white/5 bg-white/50 dark:bg-black/50">
+              <pre id="promptPreview" class="text-[11px] text-muted font-mono whitespace-pre-wrap leading-relaxed max-h-32 overflow-y-auto hide-scrollbar"></pre>
+            </div>
+          </details>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer (Test Version Badge) -->
+  <footer class="mt-auto pt-8 pb-4">
+    <div class="max-w-[1400px] mx-auto px-6 flex justify-center">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 shadow-sm cursor-default" title="Smart Proposal Console">
+        <i data-lucide="beaker" class="w-4 h-4 text-slate-500 dark:text-slate-400"></i>
+        <span class="text-xs font-bold tracking-widest text-slate-600 dark:text-slate-300">TEST VERSION : SPC</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-300 glass-card border-black/10 dark:border-white/20 px-4 py-3 rounded-xl shadow-2xl flex items-start gap-3 z-[100] max-w-sm pointer-events-none">
+    <div class="mt-0.5 shrink-0">
+      <i data-lucide="check-circle-2" class="w-5 h-5 text-accent"></i>
+    </div>
+    <div>
+      <h4 id="toastTitle" class="text-sm font-bold text-slate-900 dark:text-white">通知</h4>
+      <p id="toastMsg" class="text-xs text-slate-600 dark:text-slate-300 mt-0.5 leading-snug">メッセージ</p>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    const $ = (id) => document.getElementById(id);
+    
+    // ==========================================
+    // State & Data Structure
+    // ==========================================
+    const state = { 
+      activeTab: "internal", 
+      gensparkPrompt: "", 
+      geminiPrompt: "", 
+      notebookPrompt: "",
+      // 新規追加: 案件管理 & シナリオ用
+      cases: [],
+      currentCaseId: null,
+      currentScenario: "standard",
+      baseOcc: 0,
+      baseUnitPrice: 0,
+      isScenarioApplying: false
+    };
+
+    // ==========================================
+    // UI Settings & Theme Controls
+    // ==========================================
+    function applyTheme(isDark) {
+      const htmlClass = document.documentElement.classList;
+      if (isDark) {
+        htmlClass.add('dark');
+        document.querySelector('.theme-check-dark').classList.remove('opacity-0');
+        document.querySelector('.theme-check-light').classList.add('opacity-0');
+      } else {
+        htmlClass.remove('dark');
+        document.querySelector('.theme-check-light').classList.remove('opacity-0');
+        document.querySelector('.theme-check-dark').classList.add('opacity-0');
+      }
+    }
+
+    applyTheme(localStorage.getItem('spark_theme') === 'dark');
+
+    $("btnSettings").addEventListener("click", (e) => {
+      e.stopPropagation();
+      const menu = $("settingsMenu");
+      menu.classList.toggle("opacity-0");
+      menu.classList.toggle("invisible");
+      menu.classList.toggle("scale-95");
+    });
+
+    document.addEventListener("click", (e) => {
+      const menu = $("settingsMenu");
+      if (!menu.contains(e.target) && e.target !== $("btnSettings") && !$("btnSettings").contains(e.target)) {
+        menu.classList.add("opacity-0", "invisible", "scale-95");
+      }
+    });
+
+    $("btnThemeLight").addEventListener("click", () => {
+      localStorage.setItem('spark_theme', 'light');
+      applyTheme(false);
+      $("settingsMenu").classList.add("opacity-0", "invisible", "scale-95");
+    });
+
+    $("btnThemeDark").addEventListener("click", () => {
+      localStorage.setItem('spark_theme', 'dark');
+      applyTheme(true);
+      $("settingsMenu").classList.add("opacity-0", "invisible", "scale-95");
+    });
+
+    // ==========================================
+    // Formatters & Toasts
+    // ==========================================
+    function fmtYen(n){ if(!isFinite(n)) return "-"; return Math.round(n).toLocaleString("ja-JP") + "円"; }
+    function fmtNum(n, d=1){ if(!isFinite(n)) return "-"; return Number(n).toLocaleString("ja-JP", {maximumFractionDigits:d}); }
+
+    let toastTimeout;
+    function toast(title, msg){
+      const t = $("toast");
+      $("toastTitle").textContent = title;
+      $("toastMsg").textContent = msg;
+      
+      t.classList.remove("translate-y-20", "opacity-0");
+      t.classList.add("translate-y-0", "opacity-100");
+      
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        t.classList.add("translate-y-20", "opacity-0");
+        t.classList.remove("translate-y-0", "opacity-100");
+      }, 3000);
+    }
+
+    // ==========================================
+    // Core Data Functions (Multiple Cases)
+    // ==========================================
+    function loadAllCases() {
+      let raw = localStorage.getItem("spark_proposal_cases_v1");
+      if (!raw) {
+        // Migration from old keys (Safely parsing float values)
+        const oldRaw = localStorage.getItem("spark_pro_v2") || localStorage.getItem("spark_proposal_case_v1");
+        if (oldRaw) {
+          const oldData = JSON.parse(oldRaw);
+          oldData._id = "SPK-MIGRATE-" + Date.now();
+          oldData.updatedAt = new Date().toISOString();
+          oldData.baseOcc = parseFloat(oldData.occ) || 0;
+          oldData.baseUnitPrice = parseFloat(oldData.unitPrice) || 0;
+          state.cases = [oldData];
+          saveAllCasesToStorage();
+        } else {
+          state.cases = [];
+        }
+      } else {
+        state.cases = JSON.parse(raw);
+      }
+      renderCasesList();
+    }
+
+    function saveAllCasesToStorage() {
+      localStorage.setItem("spark_proposal_cases_v1", JSON.stringify(state.cases));
+      renderCasesList();
+    }
+
+    function getInputs(){
+      return {
+        _id: state.currentCaseId, // 内部管理ID
+        caseName: $("caseName").value.trim(), 
+        caseId: $("caseId").value.trim(),
+        address: $("address").value.trim(), 
+        station: $("station").value.trim(),
+        useType: $("useType").value, 
+        memo: $("memo").value.trim(),
+        tsubo: parseFloat($("tsubo").value || "0"), 
+        unitPrice: parseFloat($("unitPrice").value || "0"),
+        occ: parseFloat($("occ").value || "0"), 
+        capex: parseFloat($("capex").value || "0"),
+        opexRate: parseFloat($("opexRate").value || "0"), 
+        assumption: $("assumption").value.trim(),
+        gensparkResult: $("gensparkResult").value.trim(), 
+        geminiResult: $("geminiResult").value.trim(),
+        // 状態も保持
+        baseOcc: state.baseOcc,
+        baseUnitPrice: state.baseUnitPrice
+      };
+    }
+
+    function setInputs(data) {
+      state.isScenarioApplying = true; // 入力イベントトリガー抑制
+      state.currentCaseId = data._id || null;
+      $("caseName").value = data.caseName || "";
+      $("caseId").value = data.caseId || "";
+      $("address").value = data.address || "";
+      $("station").value = data.station || "";
+      $("useType").value = data.useType || $("useType").value;
+      $("memo").value = data.memo || "";
+      $("tsubo").value = data.tsubo || "";
+      $("unitPrice").value = data.unitPrice || "";
+      $("occ").value = data.occ || "";
+      $("capex").value = data.capex || "";
+      $("opexRate").value = data.opexRate || "";
+      $("assumption").value = data.assumption || "";
+      $("gensparkResult").value = data.gensparkResult || "";
+      $("geminiResult").value = data.geminiResult || "";
+      
+      state.baseOcc = data.baseOcc !== undefined ? data.baseOcc : (parseFloat(data.occ) || 0);
+      state.baseUnitPrice = data.baseUnitPrice !== undefined ? data.baseUnitPrice : (parseFloat(data.unitPrice) || 0);
+      
+      state.isScenarioApplying = false;
+      
+      // Load時はシナリオを標準に戻す
+      applyScenario("standard"); 
+    }
+
+    function generateNewId() {
+      const d = new Date();
+      const ymd = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+      const rnd = Math.floor(Math.random()*1000).toString().padStart(3,'0');
+      return `SPK-${ymd}-${rnd}`;
+    }
+
+    // ==========================================
+    // UI Render: Cases List
+    // ==========================================
+    function renderCasesList() {
+      const container = $("casesList");
+      if (state.cases.length === 0) {
+        container.innerHTML = `<div class="text-xs text-muted p-2">保存された案件はありません。新規作成してください。</div>`;
+        return;
+      }
+
+      // 降順ソート
+      const sorted = [...state.cases].sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+      container.innerHTML = sorted.map(c => {
+        const d = new Date(c.updatedAt);
+        const dateStr = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        const isCurrent = c._id === state.currentCaseId;
+        
+        return `
+        <div class="shrink-0 w-64 p-3 rounded-xl border ${isCurrent ? 'border-primary/50 bg-primary/5' : 'border-black/10 dark:border-white/10 bg-white/50 dark:bg-black/30'} flex flex-col gap-2 relative snap-start">
+          <div>
+            <div class="text-[10px] text-muted mb-0.5 flex justify-between">
+              <span>${c.caseId || 'ID未設定'}</span>
+              <span>${dateStr}</span>
+            </div>
+            <div class="text-sm font-bold text-slate-900 dark:text-white truncate" title="${c.caseName || '無題の案件'}">${c.caseName || '無題の案件'}</div>
+            <div class="text-[10px] text-slate-500 dark:text-muted truncate mt-0.5">${c.address || '住所未設定'} / ${c.useType || '用途未設定'}</div>
+          </div>
+          <div class="flex gap-1.5 mt-auto pt-2 border-t border-black/5 dark:border-white/5">
+            <button onclick="handleLoadCase('${c._id}')" class="flex-1 py-1 bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-white rounded text-[10px] font-bold transition flex justify-center items-center gap-1">
+               <i data-lucide="folder-open" class="w-3 h-3"></i> 読込
+            </button>
+            <button onclick="handleDuplicateCase('${c._id}')" class="px-2 py-1 bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-white rounded text-[10px] transition" title="複製">
+              <i data-lucide="copy" class="w-3 h-3"></i>
+            </button>
+            <button onclick="handleDeleteCase('${c._id}')" class="px-2 py-1 hover:bg-red-500/10 text-red-500 rounded text-[10px] transition" title="削除">
+              <i data-lucide="trash-2" class="w-3 h-3"></i>
+            </button>
+          </div>
+        </div>
+        `;
+      }).join("");
+      lucide.createIcons(); // 新規DOMにアイコン適用
+    }
+
+    // ==========================================
+    // Case Actions
+    // ==========================================
+    window.handleLoadCase = (id) => {
+      const target = state.cases.find(c => c._id === id);
+      if (target) {
+        setInputs(target);
+        toast("読込完了", `案件「${target.caseName || '無題'}」を読み込みました`);
+      }
+    };
+
+    window.handleDuplicateCase = (id) => {
+      const target = state.cases.find(c => c._id === id);
+      if (target) {
+        const copy = JSON.parse(JSON.stringify(target));
+        copy._id = "SPK-COPY-" + Date.now();
+        copy.caseName = (copy.caseName || "") + " (コピー)";
+        copy.updatedAt = new Date().toISOString();
+        state.cases.push(copy);
+        saveAllCasesToStorage();
+        toast("複製完了", "案件を複製しました");
+      }
+    };
+
+    window.handleDeleteCase = (id) => {
+      if (!confirm("この案件を削除しますか？\n（現在フォームに開いている場合はフォームの中身は消えません）")) return;
+      state.cases = state.cases.filter(c => c._id !== id);
+      saveAllCasesToStorage();
+      toast("削除完了", "案件を削除しました");
+    };
+
+    $("btnNewCase").addEventListener("click", () => {
+      if(!confirm("現在の入力内容をクリアして新規案件を作成しますか？\n（保存していない内容は失われます）")) return;
+      document.querySelectorAll("input, textarea").forEach(el => el.value = "");
+      $("useType").selectedIndex = 0;
+      $("caseId").value = generateNewId();
+      state.currentCaseId = null;
+      applyScenario("standard"); // フォームクリア＆シナリオ初期化
+      toast("新規案件", "新しい案件の入力を開始しました");
+    });
+
+
+    // ==========================================
+    // Scenario Logic
+    // ==========================================
+    function getScenarioLabel(s) {
+      if(s === 'conservative') return '保守';
+      if(s === 'optimistic') return '楽観';
+      return '標準';
+    }
+
+    function getScenarioContext(v) {
+      return `前提シナリオ：${getScenarioLabel(state.currentScenario)}（稼働率${fmtNum(v.occ,0)}%、坪単価${fmtYen(v.unitPrice)}/坪・月）`;
+    }
+
+    function applyScenario(type) {
+      state.isScenarioApplying = true;
+      state.currentScenario = type;
+      
+      let newOcc = state.baseOcc;
+      let newPrice = state.baseUnitPrice;
+
+      if (type === 'conservative') {
+        newOcc = Math.max(0, state.baseOcc - 10);
+        newPrice = state.baseUnitPrice * 0.92;
+      } else if (type === 'optimistic') {
+        newOcc = Math.min(95, state.baseOcc + 8);
+        newPrice = state.baseUnitPrice * 1.06;
+      }
+
+      $("occ").value = Math.round(newOcc);
+      $("unitPrice").value = Math.round(newPrice);
+      
+      // Update UI Buttons
+      document.querySelectorAll(".scenario-btn").forEach(b => {
+        b.classList.remove("active", "text-slate-900", "text-white");
+        b.classList.add("text-muted");
+        if(b.dataset.scenario === type) {
+          b.classList.add("active");
+          b.classList.remove("text-muted");
+        }
+      });
+
+      renderKPI();
+      updatePromptPreview();
+      state.isScenarioApplying = false;
+    }
+
+    document.querySelectorAll(".scenario-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        applyScenario(e.target.dataset.scenario);
+        toast("シナリオ切替", `${getScenarioLabel(state.currentScenario)}シナリオを適用しました`);
+      });
+    });
+
+    // ==========================================
+    // Logic & Calculations
+    // ==========================================
+    function calcKPI(v){
+      const occRate = (v.occ || 0) / 100;
+      const opex = (v.opexRate || 0) / 100;
+      const monthlyRent = (v.tsubo||0) * (v.unitPrice||0) * occRate;
+      const annualSales = monthlyRent * 12;
+      const annualOpex = annualSales * opex;
+      const annualProfit = annualSales - annualOpex;
+      const payback = (annualProfit>0) ? ( (v.capex||0) / annualProfit ) : Infinity;
+      return {monthlyRent, annualSales, annualOpex, annualProfit, payback};
+    }
+
+    function renderKPI(){
+      const v = getInputs();
+      const k = calcKPI(v);
+      const boxes = [
+        { l: "月額賃料 (概算)", v: fmtYen(k.monthlyRent), s: "満室時×稼働率", highlight: false },
+        { l: "年間利益 (概算)", v: fmtYen(k.annualProfit), s: "年間売上 − 運営費", highlight: true },
+        { l: "投資回収年数", v: (isFinite(k.payback)? (fmtNum(k.payback,1)+"年") : "算出不可"), s: "初期投資 ÷ 年間利益", highlight: true },
+        { l: "稼働率設定", v: fmtNum(v.occ,0)+"%", s: "現在の前提", highlight: false }
+      ];
+
+      $("kpiArea").innerHTML = boxes.map(b => `
+        <div class="bg-white/50 dark:bg-black/30 border border-black/5 dark:border-white/5 rounded-xl p-3 flex flex-col justify-center ${b.highlight ? 'border-primary/20 dark:border-primary/20 bg-primary/5' : ''}">
+          <span class="text-[10px] text-muted mb-1">${b.l}</span>
+          <span class="text-sm font-bold text-slate-900 dark:text-white font-mono tracking-tight">${b.v}</span>
+          <span class="text-[9px] text-slate-500 dark:text-muted/70 mt-1">${b.s}</span>
+        </div>
+      `).join("");
+    }
+
+    // ==========================================
+    // Prompts Builders
+    // ==========================================
+    function caseSummary(v){
+      return [
+        "案件名：" + (v.caseName || "（未入力）"),
+        "住所：" + (v.address || "（未入力）"),
+        "最寄り：" + (v.station || "（未入力）"),
+        "想定用途：" + (v.useType || "（未入力）"),
+        "補足：" + (v.memo || "（なし）"),
+        "延床面積（坪）：" + (v.tsubo || 0),
+        "坪単価（円/坪・月）：" + (v.unitPrice || 0),
+        "稼働率（%）：" + (v.occ || 0)
+      ].join("\n");
+    }
+
+    function buildGensparkPrompt(v){
+      return "あなたは日本の不動産市場専門AIです。\n以下条件で立地調査をしてください。\n\n" + caseSummary(v) + "\n\n出力してほしいこと：\n1. 周辺人口と属性\n2. 競合となる施設\n3. 想定される賃料相場の妥当性\n4. この立地の強み3つ";
+    }
+
+    function buildGeminiPrompt(v){
+      const k = calcKPI(v);
+      return "以下の立地調査結果と収支データをもとに、不動産事業の企画案を作ってください。\n\n【前提条件】\n" + caseSummary(v) + "\n" + getScenarioContext(v) + "\n\n【立地調査結果】\n" + (v.gensparkResult || "（調査結果なし）") + "\n\n【収支概算】\n年間利益：" + fmtYen(k.annualProfit) + "\n回収年数：" + (isFinite(k.payback)?fmtNum(k.payback,1)+"年":"-") + "\n\n出力内容：\n1. コンセプト\n2. ターゲット層\n3. 差別化ポイント";
+    }
+
+    function buildNotebookLMPrompt(v){
+      return "上記ソース（立地調査・収支・企画案）を使って、目的別に文章を作ってください。\n\n【現在の前提】\n" + getScenarioContext(v) + "\n\n【出力文章】\nA 社内向け：決裁のための要点整理\nB 銀行向け：根拠とリスク対策\nC お客様向け：安心と納得につながる提案文";
+    }
+
+    function updatePromptPreview(){
+      const v = getInputs();
+      state.gensparkPrompt = buildGensparkPrompt(v);
+      state.geminiPrompt = buildGeminiPrompt(v);
+      state.notebookPrompt = buildNotebookLMPrompt(v);
+
+      let show = "";
+      if(state.activeTab==="internal") show = "【推奨：NotebookLM】\n\n" + state.notebookPrompt;
+      else if(state.activeTab==="bank") show = "【推奨：NotebookLM】\n\n" + state.notebookPrompt;
+      else show = "【推奨：Gemini】\n\n" + state.geminiPrompt;
+      
+      $("promptPreview").textContent = show;
+    }
+
+    function generateFinalText(mode){
+      const v = getInputs();
+      const k = calcKPI(v);
+      const baseTop = `案件名：${v.caseName||"未入力"}\n用途：${v.useType||"未入力"}\n${getScenarioContext(v)}\n\n年間利益概算：${fmtYen(k.annualProfit)}\n投資回収：${isFinite(k.payback)?fmtNum(k.payback,1)+"年":"-"}\n\n`;
+
+      if(mode==="internal"){
+        return "【社内向け 要点整理】\n\n" + baseTop + "結論：この立地は「成立可能性あり/要検証」のどちらかを短く判断し、次の検証ポイントを明確化します。\n\n検証ポイント：\n1. 稼働率の妥当性\n2. 坪単価の妥当性\n3. 企画の勝ち筋\n\n次のアクション：\n・類似物件の賃料ヒアリング\n・別シナリオでの再計算比較";
+      }
+      if(mode==="bank"){
+        return "【銀行向け 事業説明】\n\n" + baseTop + "事業の狙い：立地特性に合う用途で、安定稼働を優先した計画とします。\n\n前提条件：\n・運営費率：" + (v.opexRate||0) + "%\n\nリスクと対策：\n1. 空室リスク：用途の可変設計で吸収\n2. 賃料下振れ：テナントミックスで維持\n\n次のアクション：\n・3シナリオ（保守/標準/楽観）収支表の提出";
+      }
+      return "【お客様向け 提案文】\n\n" + baseTop + "ご提案のポイント：この立地の特性に合わせて「無理のない収支」と「強い用途」を組み合わせた計画です。\n\nなぜこの案が良いのか：\n周辺の人の動きと、近くの施設を見て“成立しやすい型”に寄せています。\n\n次のアクション：\n・近隣の実例を一緒に確認\n・テナント候補の具体化";
+    }
+
+    async function copyText(text){
+      try{
+        await navigator.clipboard.writeText(text);
+        toast("コピー完了", "クリップボードに保存しました");
+      }catch(e){
+        const ta = document.createElement("textarea");
+        ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
+        toast("コピー完了", "クリップボードに保存しました");
+      }
+    }
+
+    // ==========================================
+    // Event Listeners
+    // ==========================================
+    ["caseName","caseId","address","station","memo","tsubo","unitPrice","occ","capex","opexRate","assumption","gensparkResult","geminiResult","useType"]
+      .forEach(id => {
+        $(id).addEventListener("input", (e) => { 
+          // 稼働率・坪単価が手動でいじられた場合、それを新しい「標準値」とする
+          if ((id === "occ" || id === "unitPrice") && !state.isScenarioApplying) {
+            state.baseOcc = parseFloat($("occ").value) || 0;
+            state.baseUnitPrice = parseFloat($("unitPrice").value) || 0;
+            
+            // UIを標準シナリオに戻す
+            state.currentScenario = "standard";
+            document.querySelectorAll(".scenario-btn").forEach(b => {
+              b.classList.remove("active", "text-slate-900", "text-white");
+              b.classList.add("text-muted");
+              if(b.dataset.scenario === "standard") {
+                b.classList.add("active");
+                b.classList.remove("text-muted");
+              }
+            });
+          }
+          renderKPI(); 
+          updatePromptPreview(); 
+        });
+      });
+
+    // Tabs
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        document.querySelectorAll(".tab-btn").forEach(b => {
+          b.classList.remove("active", "text-slate-900", "text-white");
+          b.classList.add("text-muted");
+        });
+        const t = e.target;
+        t.classList.add("active");
+        t.classList.remove("text-muted");
+        
+        state.activeTab = t.dataset.tab;
+        
+        const modeLabel = state.activeTab==="internal" ? "社内モード" : (state.activeTab==="bank" ? "銀行モード" : "お客様モード");
+        const colorClass = state.activeTab==="internal" ? "text-primary border-primary/30 bg-primary/10 dark:bg-primary/20" : 
+                           (state.activeTab==="bank" ? "text-blue-600 dark:text-blue-400 border-blue-400/30 bg-blue-400/10 dark:bg-blue-400/20" : "text-emerald-600 dark:text-accent border-accent/30 bg-accent/10 dark:bg-accent/20");
+        
+        $("modeChip").className = `px-2 py-1 rounded border text-[10px] font-bold ${colorClass}`;
+        $("modeChip").textContent = modeLabel;
+        
+        let time = "目安：10分で説明";
+        if(state.activeTab==="bank") time = "目安：根拠とリスク中心";
+        if(state.activeTab==="client") time = "目安：安心と納得を重視";
+        $("timeChip").textContent = time;
+        
+        updatePromptPreview();
+      });
+    });
+
+    // Settings Data Actions
+    $("btnDemo").addEventListener("click", () => {
+      $("settingsMenu").classList.add("opacity-0", "invisible", "scale-95");
+      $("caseName").value = "越谷駅前 小型テナントビル案"; $("caseId").value = "SPK-2026-001";
+      $("address").value = "埼玉県越谷市〇〇1-2-3"; $("station").value = "越谷駅 徒歩10分圏";
+      $("useType").value = "小規模テナントビル（1F店舗＋上階事務所）"; $("memo").value = "昼需要を狙う";
+      $("tsubo").value = 80; $("unitPrice").value = 14500; $("occ").value = 85;
+      $("capex").value = 180000000; $("opexRate").value = 28; $("assumption").value = "募集費・修繕を見込み保守的に設定";
+      
+      state.baseOcc = 85;
+      state.baseUnitPrice = 14500;
+      applyScenario("standard");
+      toast("デモ反映", "サンプルデータを入力しました");
+    });
+
+    $("btnReset").addEventListener("click", () => {
+      $("settingsMenu").classList.add("opacity-0", "invisible", "scale-95");
+      if(!confirm("入力をすべてクリアしますか？")) return;
+      document.querySelectorAll("input, textarea").forEach(el => el.value = "");
+      $("useType").selectedIndex = 0;
+      applyScenario("standard");
+      toast("初期化", "データをリセットしました");
+    });
+
+    // Buttons Actions
+    $("btnCopyGenspark").addEventListener("click", () => copyText(state.gensparkPrompt));
+    $("btnCopyGemini").addEventListener("click", () => copyText(state.geminiPrompt));
+    $("btnCopyNLM").addEventListener("click", () => copyText(state.notebookPrompt));
+    
+    $("btnCopyExcel").addEventListener("click", () => {
+      const v = getInputs(); const k = calcKPI(v);
+      const txt = `案件名\t${v.caseName}\n${getScenarioContext(v)}\n延床面積(坪)\t${v.tsubo}\n坪単価\t${v.unitPrice}\n稼働率\t${v.occ}%\n初期投資\t${v.capex}\n\n年間利益\t${Math.round(k.annualProfit)}\n回収年数\t${isFinite(k.payback)?k.payback.toFixed(1):"-"}`;
+      copyText(txt);
+    });
+
+    $("btnGenerateText").addEventListener("click", () => {
+      $("finalText").value = generateFinalText(state.activeTab);
+      toast("生成完了", "選択したモードの提案文を作成しました");
+    });
+
+    $("btnCopyText").addEventListener("click", () => {
+      const text = $("finalText").value.trim();
+      if(!text) return toast("エラー", "先に文章を生成してください");
+      copyText(text);
+    });
+
+    $("btnPrint").addEventListener("click", () => {
+      const text = $("finalText").value.trim() || "（未生成）";
+      const w = window.open("", "_blank");
+      w.document.write(`<html><head><title>SPARK Proposal</title><style>body{font-family:sans-serif;padding:20px;line-height:1.6}pre{white-space:pre-wrap;}</style></head><body><h2>提案資料</h2><pre>${text}</pre><script>window.print();<\/script></body></html>`);
+      w.document.close();
+    });
+
+    // ==========================================
+    // Master Save/Load Overrides
+    // ==========================================
+    $("btnSave").addEventListener("click", () => {
+      const data = getInputs();
+      data.updatedAt = new Date().toISOString();
+      
+      if (!data._id) {
+        data._id = "SPK-" + Date.now();
+        state.cases.unshift(data);
+      } else {
+        const idx = state.cases.findIndex(c => c._id === data._id);
+        if (idx >= 0) {
+          state.cases[idx] = data;
+        } else {
+          state.cases.unshift(data);
+        }
+      }
+      state.currentCaseId = data._id;
+      saveAllCasesToStorage();
+      toast("保存完了", "案件一覧に保存しました");
+    });
+
+    $("btnLoad").addEventListener("click", () => {
+      // 一覧セクションへスクロール
+      $("casesSection").scrollIntoView({ behavior: "smooth" });
+      toast("案件一覧", "保存済みの案件から選択してください");
+    });
+
+    // Init
+    loadAllCases(); // マイグレーションとリスト描画
+    applyScenario("standard"); // 初期表示用のKPI計算・UI反映
+  </script>
+</body>
+</html>
