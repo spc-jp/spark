@@ -141,7 +141,7 @@
   <!-- Top Navigation -->
   <header class="sticky top-0 z-50 glass-card border-b border-black/5 dark:border-white/10 px-6 py-4 mb-6">
     <div class="max-w-[1400px] mx-auto flex flex-col md:flex-row gap-4 items-center justify-between">
-      <div class="flex items-center gap-4">
+      <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" class="flex items-center gap-4 hover:opacity-80 transition-opacity cursor-pointer" title="トップへ戻る">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg border border-black/10 dark:border-white/20">
           <i data-lucide="building-2" class="text-white w-5 h-5"></i>
         </div>
@@ -154,7 +154,7 @@
           </div>
           <p class="text-xs text-muted mt-0.5">不動産AI事業計画 司令塔 (Genspark / Gemini / NotebookLM)</p>
         </div>
-      </div>
+      </a>
       
       <!-- Right Actions -->
       <div class="flex items-center gap-2 md:gap-3">
@@ -292,7 +292,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-medium text-muted mb-1.5">案件名 (管理用)</label>
-              <input type="text" id="caseName" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm" placeholder="例：越谷駅前 小型テナントビル案">
+              <input type="text" id="caseName" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm" placeholder="例：恵比寿南 新築複合ビルプロジェクト">
             </div>
             <div>
               <label class="block text-xs font-medium text-muted mb-1.5">案件ID (任意)</label>
@@ -300,11 +300,11 @@
             </div>
             <div>
               <label class="block text-xs font-medium text-muted mb-1.5">住所</label>
-              <input type="text" id="address" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm" placeholder="例：埼玉県越谷市〇〇1-2-3">
+              <input type="text" id="address" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm" placeholder="例：東京都渋谷区〇〇1-2-3">
             </div>
             <div>
               <label class="block text-xs font-medium text-muted mb-1.5">最寄り・徒歩圏</label>
-              <input type="text" id="station" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm" placeholder="例：越谷駅 徒歩10分圏">
+              <input type="text" id="station" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm" placeholder="例：〇〇駅 徒歩5分">
             </div>
             <div>
               <label class="block text-xs font-medium text-muted mb-1.5">想定用途</label>
@@ -319,7 +319,7 @@
             </div>
             <div>
               <label class="block text-xs font-medium text-muted mb-1.5">補足（ターゲット等）</label>
-              <input type="text" id="memo" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm" placeholder="例：昼需要を狙う">
+              <input type="text" id="memo" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm" placeholder="例：高単価需要を狙う">
             </div>
           </div>
 
@@ -329,23 +329,23 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label class="block text-xs font-medium text-muted mb-1.5">延床面積 (坪)</label>
-              <input type="number" id="tsubo" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm font-mono" placeholder="80">
+              <input type="number" id="tsubo" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm font-mono" placeholder="100">
             </div>
             <div>
               <label class="block text-xs font-medium text-muted mb-1.5">想定坪単価 (円/月)</label>
-              <input type="number" id="unitPrice" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm font-mono" placeholder="14500">
+              <input type="number" id="unitPrice" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm font-mono" placeholder="45000">
             </div>
             <div>
               <label class="block text-xs font-medium text-muted mb-1.5">想定稼働率 (%)</label>
-              <input type="number" id="occ" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm font-mono" placeholder="85">
+              <input type="number" id="occ" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm font-mono" placeholder="90">
             </div>
             <div>
               <label class="block text-xs font-medium text-muted mb-1.5">初期投資額 (円)</label>
-              <input type="number" id="capex" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm font-mono" placeholder="180000000">
+              <input type="number" id="capex" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm font-mono" placeholder="650000000">
             </div>
             <div>
               <label class="block text-xs font-medium text-muted mb-1.5">年間運営費率 (%)</label>
-              <input type="number" id="opexRate" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm font-mono" placeholder="28">
+              <input type="number" id="opexRate" class="input-pro w-full rounded-xl px-4 py-2.5 text-sm font-mono" placeholder="25">
             </div>
             <div>
               <label class="block text-xs font-medium text-muted mb-1.5">前提メモ</label>
@@ -545,6 +545,18 @@
     </div>
   </footer>
 
+  <!-- Confirm Modal -->
+  <div id="confirmModal" class="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200">
+    <div class="bg-white dark:bg-[#14161E] border border-black/10 dark:border-white/10 rounded-2xl p-6 max-w-sm w-full shadow-2xl transform scale-95 transition-transform duration-200" id="confirmModalContent">
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2" id="confirmTitle">確認</h3>
+      <p class="text-sm text-slate-600 dark:text-slate-300 mb-6 leading-relaxed whitespace-pre-wrap" id="confirmMessage">実行しますか？</p>
+      <div class="flex justify-end gap-3">
+        <button id="btnConfirmCancel" class="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-xl transition">キャンセル</button>
+        <button id="btnConfirmOk" class="px-4 py-2 text-sm font-bold text-white rounded-xl shadow-lg transition">実行する</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-300 glass-card border-black/10 dark:border-white/20 px-4 py-3 rounded-xl shadow-2xl flex items-start gap-3 z-[100] max-w-sm pointer-events-none">
     <div class="mt-0.5 shrink-0">
@@ -647,12 +659,45 @@
     }
 
     // ==========================================
+    // Confirm Modal Logic
+    // ==========================================
+    let confirmCallback = null;
+    
+    function showConfirm(title, message, btnText, btnColorClass, callback) {
+      $("confirmTitle").textContent = title;
+      $("confirmMessage").textContent = message;
+      const okBtn = $("btnConfirmOk");
+      okBtn.textContent = btnText;
+      okBtn.className = `px-4 py-2 text-sm font-bold text-white rounded-xl shadow-lg transition ${btnColorClass}`;
+      
+      confirmCallback = callback;
+      
+      const modal = $("confirmModal");
+      const content = $("confirmModalContent");
+      modal.classList.remove("opacity-0", "pointer-events-none");
+      content.classList.remove("scale-95");
+    }
+
+    function hideConfirm() {
+      const modal = $("confirmModal");
+      const content = $("confirmModalContent");
+      modal.classList.add("opacity-0", "pointer-events-none");
+      content.classList.add("scale-95");
+      confirmCallback = null;
+    }
+
+    $("btnConfirmCancel").addEventListener("click", hideConfirm);
+    $("btnConfirmOk").addEventListener("click", () => {
+      if (confirmCallback) confirmCallback();
+      hideConfirm();
+    });
+
+    // ==========================================
     // Core Data Functions (Multiple Cases)
     // ==========================================
     function loadAllCases() {
       let raw = localStorage.getItem("spark_proposal_cases_v1");
       if (!raw) {
-        // Migration from old keys (Safely parsing float values)
         const oldRaw = localStorage.getItem("spark_pro_v2") || localStorage.getItem("spark_proposal_case_v1");
         if (oldRaw) {
           const oldData = JSON.parse(oldRaw);
@@ -803,22 +848,37 @@
     };
 
     window.handleDeleteCase = (id) => {
-      if (!confirm("この案件を削除しますか？\n（現在フォームに開いている場合はフォームの中身は消えません）")) return;
-      state.cases = state.cases.filter(c => c._id !== id);
-      saveAllCasesToStorage();
-      toast("削除完了", "案件を削除しました");
+      showConfirm(
+        "案件の削除", 
+        "この案件を削除しますか？\n（現在フォームに開いている場合は、フォームの中身は消えません）", 
+        "削除する", 
+        "bg-red-500 hover:bg-red-600 shadow-red-500/20",
+        () => {
+          state.cases = state.cases.filter(c => c._id !== id);
+          saveAllCasesToStorage();
+          toast("削除完了", "案件を削除しました");
+        }
+      );
     };
 
     $("btnNewCase").addEventListener("click", () => {
-      if(!confirm("現在の入力内容をクリアして新規案件を作成しますか？\n（保存していない内容は失われます）")) return;
-      document.querySelectorAll("input, textarea").forEach(el => el.value = "");
-      $("useType").selectedIndex = 0;
-      $("caseId").value = generateNewId();
-      state.currentCaseId = null;
-      applyScenario("standard"); // フォームクリア＆シナリオ初期化
-      toast("新規案件", "新しい案件の入力を開始しました");
+      showConfirm(
+        "新規案件の作成", 
+        "現在の入力内容をクリアして新規案件を作成しますか？\n（保存していない内容は失われます）", 
+        "作成する", 
+        "bg-primary hover:bg-primaryHover shadow-primary/20",
+        () => {
+          document.querySelectorAll("input, textarea").forEach(el => el.value = "");
+          $("useType").selectedIndex = 0;
+          $("caseId").value = generateNewId();
+          state.currentCaseId = null;
+          state.baseOcc = 0;
+          state.baseUnitPrice = 0;
+          applyScenario("standard"); // フォームクリア＆シナリオ初期化
+          toast("新規案件", "新しい案件の入力を開始しました");
+        }
+      );
     });
-
 
     // ==========================================
     // Scenario Logic
@@ -848,8 +908,9 @@
         newPrice = state.baseUnitPrice * 1.06;
       }
 
-      $("occ").value = Math.round(newOcc);
-      $("unitPrice").value = Math.round(newPrice);
+      // 数値がない（0）の場合は空文字にしてプレースホルダーを見せる
+      $("occ").value = newOcc ? Math.round(newOcc) : "";
+      $("unitPrice").value = newPrice ? Math.round(newPrice) : "";
       
       // Update UI Buttons
       document.querySelectorAll(".scenario-btn").forEach(b => {
@@ -1047,11 +1108,40 @@
 
     $("btnReset").addEventListener("click", () => {
       $("settingsMenu").classList.add("opacity-0", "invisible", "scale-95");
-      if(!confirm("入力をすべてクリアしますか？")) return;
-      document.querySelectorAll("input, textarea").forEach(el => el.value = "");
-      $("useType").selectedIndex = 0;
-      applyScenario("standard");
-      toast("初期化", "データをリセットしました");
+      
+      showConfirm(
+        "データをクリア", 
+        "入力をすべてクリアしますか？\n（保存していない内容は失われます）", 
+        "クリアする", 
+        "bg-red-500 hover:bg-red-600 shadow-red-500/20",
+        () => {
+          // すべての入力枠を空にする
+          document.querySelectorAll("input, textarea").forEach(el => el.value = "");
+          $("useType").selectedIndex = 0;
+          
+          // 内部の状態も完全にリセットする
+          state.baseOcc = 0;
+          state.baseUnitPrice = 0;
+          state.currentCaseId = null;
+          state.currentScenario = "standard";
+          
+          // シナリオのボタンの見た目を「標準」に戻す
+          document.querySelectorAll(".scenario-btn").forEach(b => {
+            b.classList.remove("active", "text-slate-900", "text-white");
+            b.classList.add("text-muted");
+            if(b.dataset.scenario === "standard") {
+              b.classList.add("active");
+              b.classList.remove("text-muted");
+            }
+          });
+
+          // 表示を更新する
+          renderKPI();
+          updatePromptPreview();
+
+          toast("初期化", "データをリセットしました");
+        }
+      );
     });
 
     // Buttons Actions
