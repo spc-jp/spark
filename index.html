@@ -1033,16 +1033,16 @@
     // Settings Data Actions
     $("btnDemo").addEventListener("click", () => {
       $("settingsMenu").classList.add("opacity-0", "invisible", "scale-95");
-      $("caseName").value = "越谷駅前 小型テナントビル案"; $("caseId").value = "SPK-2026-001";
-      $("address").value = "埼玉県越谷市〇〇1-2-3"; $("station").value = "越谷駅 徒歩10分圏";
-      $("useType").value = "小規模テナントビル（1F店舗＋上階事務所）"; $("memo").value = "昼需要を狙う";
-      $("tsubo").value = 80; $("unitPrice").value = 14500; $("occ").value = 85;
-      $("capex").value = 180000000; $("opexRate").value = 28; $("assumption").value = "募集費・修繕を見込み保守的に設定";
+      $("caseName").value = "恵比寿南 新築複合ビルプロジェクト"; $("caseId").value = "SPK-2026-EBS01";
+      $("address").value = "東京都渋谷区恵比寿南9-9-9(架空)"; $("station").value = "恵比寿駅 徒歩3分";
+      $("useType").value = "複合（飲食＋物販＋サービス）"; $("memo").value = "高単価な飲食・美容クリニック需要を狙う";
+      $("tsubo").value = 100; $("unitPrice").value = 45000; $("occ").value = 90;
+      $("capex").value = 650000000; $("opexRate").value = 25; $("assumption").value = "恵比寿ブランドを考慮し賃料は強気、稼働率90%で算出";
       
-      state.baseOcc = 85;
-      state.baseUnitPrice = 14500;
+      state.baseOcc = 90;
+      state.baseUnitPrice = 45000;
       applyScenario("standard");
-      toast("デモ反映", "サンプルデータを入力しました");
+      toast("デモ反映", "恵比寿のサンプルデータを入力しました");
     });
 
     $("btnReset").addEventListener("click", () => {
